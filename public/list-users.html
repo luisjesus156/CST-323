@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User List</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>List of Users</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="userTableBody">
+                <!-- Users will be populated here via JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        fetch('/users')
+            .then(response => response.json())
+            .then(data => {
+                let userTableBody = document.getElementById('userTableBody');
+                data.forEach(user => {
+                    userTableBody.innerHTML += `
+                        <tr>
+                            <td>${user.id}</td>
+                            <td>${user.name}</td>
+                            <td>${user.email}</td>
+                            <td>
+                                <button onclick="deleteUser(${user.id})" class="btn btn-danger btn-sm">Delete</button>
+                                <button onclick="editUser(${user.id})" class="btn btn-primary btn-sm">Edit</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            });
+
+        function deleteUser(id) {
+            fetch(`/delete-user/${id}`, { method: 'DELETE' })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    window.location.reload(); // Reload the page after deleting
+                });
+        }
+
+        function editUser(id) {
+            window.location.href = `/edit-user.html?id=${id}`; // Navigate to edit user page
+        }
+    </script>
+</body>
+</html>
